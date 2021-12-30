@@ -5,7 +5,8 @@ import exceptions.DrinkNotFoundException;
 import java.util.Arrays;
 
 public enum Type {
-    TEA("T", "Tea", 0.4), COFFEE("C", "Coffee", 0.6), CHOCOLATE("H", "Chocolate", 0.5);
+    TEA("T", "Tea", 0.4), COFFEE("C", "Coffee", 0.6), CHOCOLATE("H", "Chocolate", 0.5),
+    ORANGE("O", "Orange", 0.6);
 
     private final String initial;
     private final String orderName;
