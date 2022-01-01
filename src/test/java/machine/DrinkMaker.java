@@ -8,9 +8,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Drink maker should")
 class DrinkMakerTest {
+    private final DrinkMaker drinkMaker = new DrinkMaker();
+
     @Test
     void makeACoffeeWithTwoSugarAndAStick() {
-        var drinkMaker = new DrinkMaker();
         var coffee = new Order("Coffee", 2, 0.6);
 
         var drink = drinkMaker.make(coffee);
@@ -20,7 +21,6 @@ class DrinkMakerTest {
 
     @Test
     void makeATeaWithOneSugarAndAStick() {
-        var drinkMaker = new DrinkMaker();
         var tea = new Order("Tea", 1, 0.4);
 
         var drink = drinkMaker.make(tea);
@@ -30,8 +30,7 @@ class DrinkMakerTest {
 
     @Test
     void makeAHotChocolateWithoutSugarNorStick() {
-        var drinkMaker = new DrinkMaker();
-        Order chocolate = new Order("Chocolate", 0, 0.5);
+        var chocolate = new Order("Chocolate", 0, 0.5);
 
         var drink = drinkMaker.make(chocolate);
 
@@ -40,12 +39,47 @@ class DrinkMakerTest {
 
     @Test
     void notMakeCoffeeIfAmountIsNotSufficient() {
-        var drinkMaker = new DrinkMaker();
-        Order chocolate = new Order("Chocolate", 0, 0.2);
+        var coffee = new Order("Coffee", 0, 0.2);
+
+        var drink = drinkMaker.make(coffee);
+
+        assertThat(drink).isEqualTo("M:Not enough money given");
+    }
+
+    @Test
+    void notMakeTeaIfAmountIsNotSufficient() {
+        var tea = new Order("Tea", 0, 0.2);
+
+        var drink = drinkMaker.make(tea);
+
+        assertThat(drink).isEqualTo("M:Not enough money given");
+    }
+
+    @Test
+    void notMakeChocolateIfAmountIsNotSufficient() {
+        var chocolate = new Order("Chocolate", 0, 0.2);
 
         var drink = drinkMaker.make(chocolate);
 
         assertThat(drink).isEqualTo("M:Not enough money given");
+    }
+
+    @Test
+    void makeAnOrangeJuiceFor6Cents() {
+        var orange = new Order("Orange", 0, 0.6);
+
+        var drink = drinkMaker.make(orange);
+
+        assertThat(drink).isEqualTo("O::");
+    }
+
+    @Test
+    void makeAnExtraHotCoffee() {
+        var coffee = new Order("Coffee", 1, 0.6, true);
+
+        var drink = drinkMaker.make(coffee);
+
+        assertThat(drink).isEqualTo("Ch:1:0");
     }
 
 }

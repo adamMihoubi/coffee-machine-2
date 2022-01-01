@@ -2,32 +2,37 @@ package machine;
 
 import dtos.Order;
 import exceptions.DrinkNotFoundException;
-import exceptions.NotEnoughMoneyToGetTheDrink;
+import exceptions.NotEnoughMoneyToGetTheDrinkException;
+
+import java.util.function.IntPredicate;
 
 public class DrinkMaker {
     public static final String DELIMITER = ":";
     private static final String STICK = "0";
+    private static final IntPredicate isThereAnySugar = value -> value > 0;
 
     public String make(Order order) {
         try {
             return makeTheDrink(order);
-        } catch (DrinkNotFoundException | NotEnoughMoneyToGetTheDrink e) {
+        } catch (DrinkNotFoundException | NotEnoughMoneyToGetTheDrinkException e) {
             return String.join(DELIMITER, "M", e.getMessage());
         }
     }
 
-    private String makeTheDrink(Order order) throws DrinkNotFoundException, NotEnoughMoneyToGetTheDrink {
-        var drink = Type.getFrom(order.drink());
-        verifyIfThereIsEnoughMoney(drink, order.amount());
-        if (order.sugars() > 0) {
-            return String.join(DELIMITER, drink.getInitial(), String.valueOf(order.sugars()), STICK);
-        }
-        return String.join(DELIMITER, drink.getInitial(), DELIMITER);
+    private String makeTheDrink(Order order) throws DrinkNotFoundException, NotEnoughMoneyToGetTheDrinkException {
+        var drink = DrinkType.getFrom(order.drink());
+        MoneyVerifier.verifyIfThereIsEnoughMoney(drink, order.amount());
+        var drinkInitial = computeIfHot(drink.getInitial(), order.isExtraHot());
+        return drinkWithSugarOrRegular(order, drinkInitial);
     }
 
-    private void verifyIfThereIsEnoughMoney(Type drink, Double amount) throws NotEnoughMoneyToGetTheDrink {
-        if (drink.cantGetIt(amount)) {
-            throw new NotEnoughMoneyToGetTheDrink();
-        }
+    private String computeIfHot(String initial, boolean extraHot) {
+        return extraHot ? initial.concat("h") : initial;
+    }
+
+    private String drinkWithSugarOrRegular(Order order, String drinkInitial) {
+        return isThereAnySugar.test(order.sugars()) ?
+                       String.join(DELIMITER, drinkInitial, String.valueOf(order.sugars()), STICK) :
+                       String.join(DELIMITER, drinkInitial, DELIMITER);
     }
 }
