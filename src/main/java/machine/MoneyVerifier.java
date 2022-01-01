@@ -1,11 +1,11 @@
 package machine;
 
-import exceptions.NotEnoughMoneyToGetTheDrink;
+import exceptions.NotEnoughMoneyToGetTheDrinkException;
 
 public interface MoneyVerifier {
-    static void verifyIfThereIsEnoughMoney(DrinkType drink, Double amount) throws NotEnoughMoneyToGetTheDrink {
+    static void verifyIfThereIsEnoughMoney(DrinkType drink, Double amount) throws NotEnoughMoneyToGetTheDrinkException {
         if (drink.cantGetIt(amount)) {
-            throw new NotEnoughMoneyToGetTheDrink();
+            throw new NotEnoughMoneyToGetTheDrinkException();
         }
     }
 }

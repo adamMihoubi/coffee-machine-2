@@ -2,7 +2,7 @@ package machine;
 
 import dtos.Order;
 import exceptions.DrinkNotFoundException;
-import exceptions.NotEnoughMoneyToGetTheDrink;
+import exceptions.NotEnoughMoneyToGetTheDrinkException;
 
 import java.util.function.IntPredicate;
 
@@ -14,12 +14,12 @@ public class DrinkMaker {
     public String make(Order order) {
         try {
             return makeTheDrink(order);
-        } catch (DrinkNotFoundException | NotEnoughMoneyToGetTheDrink e) {
+        } catch (DrinkNotFoundException | NotEnoughMoneyToGetTheDrinkException e) {
             return String.join(DELIMITER, "M", e.getMessage());
         }
     }
 
-    private String makeTheDrink(Order order) throws DrinkNotFoundException, NotEnoughMoneyToGetTheDrink {
+    private String makeTheDrink(Order order) throws DrinkNotFoundException, NotEnoughMoneyToGetTheDrinkException {
         var drink = DrinkType.getFrom(order.drink());
         MoneyVerifier.verifyIfThereIsEnoughMoney(drink, order.amount());
         var drinkInitial = computeIfHot(drink.getInitial(), order.isExtraHot());
