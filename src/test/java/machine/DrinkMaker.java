@@ -82,4 +82,22 @@ class DrinkMakerTest {
         assertThat(drink).isEqualTo("Ch:1:0");
     }
 
+    @Test
+    void makeAnExtraHotTea() {
+        var tea = new Order("Tea", 1, 0.6, true);
+
+        var drink = drinkMaker.make(tea);
+
+        assertThat(drink).isEqualTo("Th:1:0");
+    }
+
+    @Test
+    void makeAnExtraHotChocolate() {
+        var chocolate = new Order("Chocolate", 0, 0.6, true);
+
+        var drink = drinkMaker.make(chocolate);
+
+        assertThat(drink).isEqualTo("Hh::");
+    }
+
 }
