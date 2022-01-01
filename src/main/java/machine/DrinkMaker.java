@@ -4,9 +4,12 @@ import dtos.Order;
 import exceptions.DrinkNotFoundException;
 import exceptions.NotEnoughMoneyToGetTheDrink;
 
+import java.util.function.IntPredicate;
+
 public class DrinkMaker {
     public static final String DELIMITER = ":";
     private static final String STICK = "0";
+    private static final IntPredicate isThereAnySugar = value -> value > 0;
 
     public String make(Order order) {
         try {
@@ -17,22 +20,19 @@ public class DrinkMaker {
     }
 
     private String makeTheDrink(Order order) throws DrinkNotFoundException, NotEnoughMoneyToGetTheDrink {
-        var drink = Type.getFrom(order.drink());
-        verifyIfThereIsEnoughMoney(drink, order.amount());
+        var drink = DrinkType.getFrom(order.drink());
+        MoneyVerifier.verifyIfThereIsEnoughMoney(drink, order.amount());
         var drinkInitial = computeIfHot(drink.getInitial(), order.isExtraHot());
-        if (order.sugars() > 0) {
-            return String.join(DELIMITER, drinkInitial, String.valueOf(order.sugars()), STICK);
-        }
-        return String.join(DELIMITER, drinkInitial, DELIMITER);
+        return drinkWithSugarOrRegular(order, drinkInitial);
     }
 
     private String computeIfHot(String initial, boolean extraHot) {
         return extraHot ? initial.concat("h") : initial;
     }
 
-    private void verifyIfThereIsEnoughMoney(Type drink, Double amount) throws NotEnoughMoneyToGetTheDrink {
-        if (drink.cantGetIt(amount)) {
-            throw new NotEnoughMoneyToGetTheDrink();
-        }
+    private String drinkWithSugarOrRegular(Order order, String drinkInitial) {
+        return isThereAnySugar.test(order.sugars()) ?
+                       String.join(DELIMITER, drinkInitial, String.valueOf(order.sugars()), STICK) :
+                       String.join(DELIMITER, drinkInitial, DELIMITER);
     }
 }
