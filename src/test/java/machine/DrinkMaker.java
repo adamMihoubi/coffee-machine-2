@@ -12,13 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Drink maker should")
 class DrinkMakerTest {
-    public static final String COFFEE = "Coffee";
-    public static final String TEA = "Tea";
-    public static final String CHOCOLATE = "Chocolate";
-    public static final String ORANGE = "Orange";
-    public static final int ZERO = 0;
-    public static final int ONE = 1;
-    public static final int TWO = 2;
+    private static final String COFFEE = "Coffee";
+    private static final String TEA = "Tea";
+    private static final String CHOCOLATE = "Chocolate";
+    private static final String ORANGE = "Orange";
+    private static final int ZERO = 0;
+    private static final int ONE = 1;
+    private static final int TWO = 2;
     private final DrinkMaker drinkMaker = new DrinkMaker();
 
     private static Stream<Arguments> givenArguments() {
