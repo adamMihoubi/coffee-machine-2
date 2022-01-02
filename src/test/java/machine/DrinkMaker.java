@@ -2,7 +2,11 @@ package machine;
 
 import dtos.Order;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,94 +14,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DrinkMakerTest {
     private final DrinkMaker drinkMaker = new DrinkMaker();
 
-    @Test
-    void makeACoffeeWithTwoSugarAndAStick() {
-        var coffee = new Order("Coffee", 2, 0.6);
-
-        var drink = drinkMaker.make(coffee);
-
-        assertThat(drink).isEqualTo("C:2:0");
+    private static Stream<Arguments> givenArguments() {
+        return Stream.of(
+                Arguments.of("Coffee", 2, 0.6, "C:2:0", false),
+                Arguments.of("Tea", 1, 0.4, "T:1:0", false),
+                Arguments.of("Chocolate", 0, 0.5, "H::", false),
+                Arguments.of("Coffee", 0, 0.2, "M:Not enough money given", false),
+                Arguments.of("Tea", 0, 0.2, "M:Not enough money given", false),
+                Arguments.of("Chocolate", 0, 0.2, "M:Not enough money given", false),
+                Arguments.of("Orange", 0, 0.6, "O::", false),
+                Arguments.of("Coffee", 1, 0.6, "Ch:1:0", true),
+                Arguments.of("Tea", 1, 0.6, "Th:1:0", true),
+                Arguments.of("Chocolate", 1, 0.6, "Hh:1:0", true)
+        );
     }
 
-    @Test
-    void makeATeaWithOneSugarAndAStick() {
-        var tea = new Order("Tea", 1, 0.4);
+    @DisplayName("provide")
+    @ParameterizedTest(name = "{3} when order is {0} with {1} sugars and an amount of {2} and extraHot is {4}")
+    @MethodSource("givenArguments")
+    void makeTheGoodDrink(String givenOrder, int sugars, double amount, String expectedDrink, boolean isExtraHot) {
+        var tea = new Order(givenOrder, sugars, amount, isExtraHot);
 
         var drink = drinkMaker.make(tea);
 
-        assertThat(drink).isEqualTo("T:1:0");
+        assertThat(drink).isEqualTo(expectedDrink);
     }
-
-    @Test
-    void makeAHotChocolateWithoutSugarNorStick() {
-        var chocolate = new Order("Chocolate", 0, 0.5);
-
-        var drink = drinkMaker.make(chocolate);
-
-        assertThat(drink).isEqualTo("H::");
-    }
-
-    @Test
-    void notMakeCoffeeIfAmountIsNotSufficient() {
-        var coffee = new Order("Coffee", 0, 0.2);
-
-        var drink = drinkMaker.make(coffee);
-
-        assertThat(drink).isEqualTo("M:Not enough money given");
-    }
-
-    @Test
-    void notMakeTeaIfAmountIsNotSufficient() {
-        var tea = new Order("Tea", 0, 0.2);
-
-        var drink = drinkMaker.make(tea);
-
-        assertThat(drink).isEqualTo("M:Not enough money given");
-    }
-
-    @Test
-    void notMakeChocolateIfAmountIsNotSufficient() {
-        var chocolate = new Order("Chocolate", 0, 0.2);
-
-        var drink = drinkMaker.make(chocolate);
-
-        assertThat(drink).isEqualTo("M:Not enough money given");
-    }
-
-    @Test
-    void makeAnOrangeJuiceFor6Cents() {
-        var orange = new Order("Orange", 0, 0.6);
-
-        var drink = drinkMaker.make(orange);
-
-        assertThat(drink).isEqualTo("O::");
-    }
-
-    @Test
-    void makeAnExtraHotCoffee() {
-        var coffee = new Order("Coffee", 1, 0.6, true);
-
-        var drink = drinkMaker.make(coffee);
-
-        assertThat(drink).isEqualTo("Ch:1:0");
-    }
-
-    @Test
-    void makeAnExtraHotTea() {
-        var tea = new Order("Tea", 1, 0.6, true);
-
-        var drink = drinkMaker.make(tea);
-
-        assertThat(drink).isEqualTo("Th:1:0");
-    }
-
-    @Test
-    void makeAnExtraHotChocolate() {
-        var chocolate = new Order("Chocolate", 0, 0.6, true);
-
-        var drink = drinkMaker.make(chocolate);
-
-        assertThat(drink).isEqualTo("Hh::");
-    }
-
 }
